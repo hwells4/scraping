@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
@@ -29,7 +28,7 @@ scrapes/*/output/*.json
 *.csv
 *.json
 !package.json
-!package-lock.json
+!package-lock.json  # Keep package-lock.json for dependency consistency
 
 # Screenshots
 screenshots/
