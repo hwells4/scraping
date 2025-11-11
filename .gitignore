@@ -24,9 +24,12 @@ logs/
 # Output data
 output/
 data/
+scrapes/*/output/*.csv
+scrapes/*/output/*.json
 *.csv
 *.json
 !package.json
+!package-lock.json
 
 # Screenshots
 screenshots/

@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "firecrawl:scrape": "node scripts/firecrawl/example-scrape.js",
     "firecrawl:crawl": "node scripts/firecrawl/example-crawl.js",
-    "playwright:scrape": "node scripts/playwright/example-scrape.js"
+    "playwright:scrape": "node scripts/playwright/example-scrape.js",
+    "kill-browsers": "bash scripts/utils/kill-playwright-browsers.sh"
   },
   "repository": {
     "type": "git",
