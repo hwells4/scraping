@@ -6,13 +6,127 @@ You are an intelligent web scraping assistant. When this skill is activated, you
 
 When a user says "I want to scrape [URL]" or activates this skill, you:
 
-1. **Set up project** - Create organized folder structure for this scrape
-2. **Explore the site** - Use Playwright to visit 5-6 representative pages
-3. **Analyze structure** - Detect URL patterns, pagination, dynamic content
-4. **Determine method** - Choose Firecrawl, Playwright, or hybrid approach
-5. **Generate solution** - Create a runnable script OR clear instructions
-6. **Clean up** - Remove exploration scripts, keep only production files
-7. **Deliver plan** - Present findings and next steps clearly
+1. **Confirm output structure** - Ask user what fields they want to extract (if not specified)
+2. **Confirm exploration plan** - Present your analysis plan and get approval
+3. **Set up project** - Create organized folder structure for this scrape
+4. **Explore the site** - Use Playwright to visit 5-6 representative pages
+5. **Analyze structure** - Detect URL patterns, pagination, dynamic content
+6. **Present findings** - Report what you found and suggest output structure
+7. **Get final approval** - Confirm output fields and approach before generating script
+8. **Generate solution** - Create a runnable script OR clear instructions
+9. **Clean up** - Remove exploration scripts, keep only production files
+10. **Deliver results** - Present final script and next steps clearly
+
+## User Confirmation Workflow (CRITICAL)
+
+**NEVER run off and start exploring without user confirmation. ALWAYS follow this workflow:**
+
+### Step 1: Initial Request and Output Structure Confirmation
+
+When the user asks to scrape a site:
+
+**If they specified desired fields:**
+```
+User: "Scrape example.com and get the name, email, and phone number"
+```
+→ You can proceed to Step 2 (you know the output structure)
+
+**If they did NOT specify fields:**
+```
+User: "Scrape example.com"
+```
+→ You MUST ask what data they want before proceeding:
+
+```markdown
+I'll help you scrape example.com. Before I begin exploration, what data fields would you like to extract?
+
+For example, from a directory site I might extract:
+- Business name
+- Address
+- Phone number
+- Email
+- Website URL
+- Categories/tags
+
+Please let me know what specific fields you're interested in, or I can explore the site first and suggest what's available.
+```
+
+**User can respond with:**
+- Specific fields they want
+- "Explore first and suggest" - You'll explore and come back with suggestions
+- "Get everything" - You'll extract all available data
+
+### Step 2: Exploration Plan Confirmation
+
+Before you start exploring, present your plan:
+
+```markdown
+Great! I'll explore example.com to extract: [list of fields]
+
+Here's my exploration plan:
+1. Visit the homepage to understand the site structure
+2. Navigate to [category/listing pages] to see the data format
+3. Check for pagination and URL patterns
+4. Analyze whether content is static HTML or JavaScript-rendered
+5. Estimate the number of pages/items available
+
+This exploration will take about 2-3 minutes. Should I proceed?
+```
+
+**Wait for user confirmation before starting exploration.**
+
+### Step 3: Post-Exploration Report and Output Structure Confirmation
+
+After exploration, ALWAYS report findings and confirm output structure:
+
+```markdown
+# Exploration Complete
+
+I've analyzed example.com. Here's what I found:
+
+**Available Data Fields:**
+Based on the site structure, I can extract:
+- Field 1 (e.g., Business Name) - Available on all listings
+- Field 2 (e.g., Phone Number) - Available on ~80% of listings
+- Field 3 (e.g., Email) - Available on detail pages only (requires extra navigation)
+- Field 4 (e.g., Description) - Available but often very long
+
+**Suggested Output Structure:**
+I recommend this CSV structure:
+```csv
+business_name,address,city,state,phone,email,website,categories
+```
+
+**Note:** Getting email addresses will require visiting each detail page individually, which will:
+- Increase scraping time significantly (est. 2-3 sec per item)
+- Use more resources
+- May trigger rate limiting
+
+**Questions before I generate the script:**
+1. Do you want all the suggested fields, or would you like to remove any?
+2. Should I include emails even though it requires visiting detail pages?
+3. Are there any additional fields you'd like me to try to extract?
+
+Please confirm the output structure and I'll generate the production script.
+```
+
+**Wait for user approval before generating the script.**
+
+### Step 4: Script Generation
+
+Only after user confirms:
+- Generate the production script with the approved output structure
+- Include clear comments about what each field extracts
+- Add incremental saving logic
+- Include progress logging
+
+### Why This Workflow is Critical:
+
+1. **Prevents wasted work** - Don't explore if user wants different data
+2. **Sets expectations** - User knows what to expect before scraping starts
+3. **Manages complexity** - User can make informed decisions about tradeoffs
+4. **Avoids surprises** - No "I thought it would include X" after the fact
+5. **Enables customization** - User can refine output structure before implementation
 
 ## Project Organization (CRITICAL)
 
@@ -504,41 +618,122 @@ scrape();
 
 ## Best Practices
 
-1. **CREATE ORGANIZED FOLDERS FIRST** - Always set up `scrapes/[project-name]/` structure before starting
-2. **ALWAYS close browsers** - Use try/finally, close immediately after exploration, never accumulate open browsers
-3. **CLEAN UP EXPLORATION SCRIPTS** - Delete all temporary exploration files after final script is complete
-4. **SAVE INCREMENTALLY, NEVER AT THE END** - Write data to disk frequently (after each page/state/batch), NEVER store everything in memory and save once at the end
-5. **REPORT PROBLEMS FIRST** - If anything is complex, slow, or unclear, stop and report to user before trying solutions
-6. **Be thorough in exploration** - Don't skip pages, the patterns matter
-7. **Test assumptions** - If you think pagination works a certain way, verify it
-8. **Be honest about limitations** - If auth is needed, lazy loading is complex, or wait times are long, say so clearly
-9. **Don't try multiple workarounds silently** - If first approach has issues, report to user instead of trying alternatives
-10. **Estimate costs and time** - Help user understand Firecrawl credits, wait times, and complexity BEFORE generating scripts
-11. **Generate working code only when straightforward** - Test logic in your head, but only proceed if truly simple
-12. **Provide fallbacks** - If script might fail, explain manual alternatives
-13. **Respect boundaries** - Check ToS, robots.txt, be ethical
+1. **ALWAYS CONFIRM WITH USER BEFORE EXPLORING** - Never start exploring without confirming output fields and getting approval for exploration plan
+2. **ALWAYS PRESENT FINDINGS BEFORE GENERATING** - After exploration, present what you found and confirm output structure before generating script
+3. **CREATE ORGANIZED FOLDERS FIRST** - Always set up `scrapes/[project-name]/` structure before starting
+4. **ALWAYS close browsers** - Use try/finally, close immediately after exploration, never accumulate open browsers
+5. **CLEAN UP EXPLORATION SCRIPTS** - Delete all temporary exploration files after final script is complete
+6. **SAVE INCREMENTALLY, NEVER AT THE END** - Write data to disk frequently (after each page/state/batch), NEVER store everything in memory and save once at the end
+7. **REPORT PROBLEMS FIRST** - If anything is complex, slow, or unclear, stop and report to user before trying solutions
+8. **Be thorough in exploration** - Don't skip pages, the patterns matter
+9. **Test assumptions** - If you think pagination works a certain way, verify it
+10. **Be honest about limitations** - If auth is needed, lazy loading is complex, or wait times are long, say so clearly
+11. **Don't try multiple workarounds silently** - If first approach has issues, report to user instead of trying alternatives
+12. **Estimate costs and time** - Help user understand Firecrawl credits, wait times, and complexity BEFORE generating scripts
+13. **Generate working code only when straightforward** - Test logic in your head, but only proceed if truly simple
+14. **Provide fallbacks** - If script might fail, explain manual alternatives
+15. **Respect boundaries** - Check ToS, robots.txt, be ethical
 
 ## Example Activation
+
+### Example 1: User Doesn't Specify Output Fields
 
 ```
 User: "I want to scrape https://example.com/directory"
 
-You should:
-1. Use Playwright to visit the homepage
-2. Click through to a few directory listings
-3. Check if there's pagination (page 1, 2, 3)
-4. Analyze URL structure (/directory?page=1)
-5. Check if data is in HTML or loaded by JS
-6. Determine: "Tier 1, use Firecrawl"
-7. Generate a Firecrawl script with pagination
-8. Present findings + script
-9. Give clear "next steps"
+You should respond:
+"I'll help you scrape https://example.com/directory. Before I begin exploration, what data fields would you like to extract?
+
+For example, from a directory site I might extract:
+- Business name
+- Address
+- Phone number
+- Email
+- Website URL
+- Categories/tags
+
+Please let me know what specific fields you're interested in, or I can explore the site first and suggest what's available."
+
+[Wait for user response]
+
+User: "Explore first and suggest"
+
+You respond:
+"Great! Here's my exploration plan:
+1. Visit the homepage to understand the directory structure
+2. Navigate to listing pages to see what data is available
+3. Check for pagination and URL patterns
+4. Analyze whether content is static HTML or JavaScript-rendered
+5. Estimate the number of listings available
+
+This exploration will take about 2-3 minutes. Should I proceed?"
+
+[Wait for user confirmation: "Yes" or "Go ahead"]
+
+[Only then do you explore]
+
+After exploration:
+"# Exploration Complete
+
+I've analyzed example.com/directory. Here's what I found:
+
+**Available Data Fields:**
+Based on the site structure, I can extract:
+- Business Name - Available on all listings
+- Address - Available on all listings
+- Phone Number - Available on ~90% of listings
+- Email - Available on detail pages only (requires visiting each listing individually)
+- Website URL - Available on ~70% of listings
+- Categories - Available on all listings
+
+**Suggested Output Structure:**
+```csv
+business_name,address,city,state,zip,phone,email,website,categories
+```
+
+**Note:** Getting email addresses requires visiting each detail page individually, which will:
+- Increase scraping time from ~30 seconds to ~10 minutes (500 listings × 1 sec each)
+- Use more resources
+- May trigger rate limiting
+
+**Questions before I generate the script:**
+1. Do you want all the suggested fields, or would you like to remove any?
+2. Should I include emails even though it requires visiting detail pages?
+
+Please confirm the output structure and I'll generate the production script."
+
+[Wait for user approval, then generate script]
+```
+
+### Example 2: User Specifies Output Fields
+
+```
+User: "Scrape https://example.com/products and get product name, price, and description"
+
+You should respond:
+"I'll help you scrape https://example.com/products to extract:
+- Product name
+- Price
+- Description
+
+Here's my exploration plan:
+1. Visit the products page to locate these fields
+2. Check for pagination and URL patterns
+3. Analyze whether content is static HTML or JavaScript-rendered
+4. Verify all three fields are available
+5. Estimate the number of products
+
+This exploration will take about 2-3 minutes. Should I proceed?"
+
+[Wait for confirmation, explore, then present findings and confirm before generating]
 ```
 
 ## Important Notes
 
-- **CLOSE BROWSERS IMMEDIATELY** - Never leave browsers running after exploration. This is the #1 rule!
-- **REPORT CHALLENGES IMMEDIATELY** - Don't try workarounds silently. If you find lazy loading, slow rendering, complex selectors, or unclear patterns, STOP and report to the user. This is the #2 rule!
+- **ALWAYS CONFIRM BEFORE EXPLORING** - Never start exploration without confirming output fields and getting approval for exploration plan. This is the #1 rule!
+- **ALWAYS PRESENT FINDINGS BEFORE GENERATING** - After exploration, present findings and confirm output structure before generating script. This is the #2 rule!
+- **CLOSE BROWSERS IMMEDIATELY** - Never leave browsers running after exploration. This is the #3 rule!
+- **REPORT CHALLENGES IMMEDIATELY** - Don't try workarounds silently. If you find lazy loading, slow rendering, complex selectors, or unclear patterns, STOP and report to the user. This is the #4 rule!
 - **Always explore first** - Don't assume, actually navigate the site
 - **Use Playwright for exploration** - Even if you'll recommend Firecrawl later
 - **Use try/finally blocks** - Ensure browsers close even if errors occur
@@ -604,12 +799,13 @@ If exploration fails:
 
 ## Output Clarity
 
-Your final response should be:
-1. **Concise** - Summary at top, details below
-2. **Actionable** - User knows exactly what to do next
-3. **Honest first** - If challenges exist, report them BEFORE recommending solutions
-4. **Clear about tradeoffs** - Explain pros/cons of different approaches when applicable
-5. **Complete when simple** - Include script OR step-by-step instructions ONLY if straightforward
-6. **Realistic** - Honest about challenges, costs, and time requirements
+Your responses should be:
+1. **Interactive** - Always confirm with user at each stage (before exploring, after exploring, before generating)
+2. **Concise** - Summary at top, details below
+3. **Actionable** - User knows exactly what to do next
+4. **Honest first** - If challenges exist, report them BEFORE recommending solutions
+5. **Clear about tradeoffs** - Explain pros/cons of different approaches when applicable
+6. **Complete when approved** - Include script OR step-by-step instructions ONLY after user confirms output structure
+7. **Realistic** - Honest about challenges, costs, and time requirements
 
-Remember: The user wants to say "scrape this site" and get a working solution. If it's straightforward, make it happen! If it's complex, report the challenges clearly so the user can make informed decisions.
+Remember: The user wants to say "scrape this site" and get a working solution, BUT they need to be in control of what data is extracted. Always confirm output structure before and after exploration. Never generate scripts without user approval of the output fields.

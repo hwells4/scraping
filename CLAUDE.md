@@ -112,7 +112,22 @@ This project includes an auto-scrape skill (`.claude/skills/auto-scrape.md`) tha
 - Generates production-ready scripts with incremental saving
 - Enforces the file organization standards
 
+**User Confirmation Workflow:**
+
+When using the auto-scrape skill, ALWAYS follow this workflow:
+
+1. **Before Exploration**: Ask user what data fields they want to extract (if not specified)
+2. **Confirm Plan**: Present exploration plan and get approval before starting
+3. **After Exploration**: Present findings and suggest output structure
+4. **Get Final Approval**: Confirm output fields with user before generating script
+
+**NEVER:**
+- Start exploring without confirming desired output fields
+- Generate scripts without user approval of output structure
+- Run off and do things without keeping user informed
+
 **Refer to the skill for:**
+- Complete user confirmation workflow
 - Website analysis methodology
 - Script generation templates
 - Best practices for different site types
@@ -221,12 +236,14 @@ scraping/
 
 ## Remember
 
-1. **Organize first** - Create `scrapes/[project-name]/` before starting
-2. **Save incrementally** - After each page/state/batch, not at the end
-3. **Close browsers** - Always use try/finally blocks
-4. **Clean up** - Delete exploration scripts after final script is created
-5. **Fix, don't workaround** - Solve problems in the core tools
-6. **Use utilities** - `npm run kill-browsers` when browsers are stuck
+1. **Confirm with user** - Always ask about desired output fields and get approval before exploring
+2. **Present findings** - After exploration, present output structure and get approval before generating script
+3. **Organize first** - Create `scrapes/[project-name]/` before starting
+4. **Save incrementally** - After each page/state/batch, not at the end
+5. **Close browsers** - Always use try/finally blocks
+6. **Clean up** - Delete exploration scripts after final script is created
+7. **Fix, don't workaround** - Solve problems in the core tools
+8. **Use utilities** - `npm run kill-browsers` when browsers are stuck
 
 ## Questions?
 
